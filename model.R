@@ -10,6 +10,7 @@ test_that("path is correct",{
   expect_match(pathvar,"/home/gayatri/Fortiate/Build/Workspaces/R/ML_Transaction-model_R/data_csv.csv")
 })
 x<- dput(names(df))
+
 print(x)
 
 names = c("PROCESSING_CODE","POS_DATA","TRANSACTION_AMOUNT","CARD_ACCEPTOR_ACTIVITY","CODE_ACTION","POS_ENTRY_MODE")
@@ -44,7 +45,7 @@ df$TRACK_REWRITE_CAP <- sapply(strsplit(as.character(df$POS_DATA),''), "[", 10)
 df$TERM_OUTPUT_IND <- sapply(strsplit(as.character(df$POS_DATA),''), "[", 11)
 df$PIN_ENTRY_IND <- sapply(strsplit(as.character(df$POS_DATA),''), "[", 12)
 df$POS_DATA =NULL
-
+write.csv(df,'/home/gayatri/Fortiate/Build/Workspaces/R/ML_Transaction-model_R/bat.csv',row.names = FALSE)
 
 library(caTools)
 
@@ -67,7 +68,7 @@ train_ind = sample(seq_len(nrow(Smarket)),size = smp_siz)  # Randomly identifies
 df.train =Smarket[train_ind,] #creates the training dataset with row numbers stored in train_ind
 df.test=Smarket[-train_ind,]
 
-
+library(data.table)
 #results = sample.split(df$CODE_ACTION,SplitRatio = 0.8)
 #df.train = df[results == TRUE, ]
 write.csv(df,'/home/gayatri/Fortiate/Build/Workspaces/R/ML_Transaction-model_R/Train.csv',row.names = FALSE)
@@ -128,6 +129,6 @@ df6
 nnmodel<- h2o.deeplearning(x=x.indep,y=y.dep,training_frame = train.h2o,epochs = 10,hidden = 6)
 h2o.saveModel(nnmodel,path = "/home/gayatri/Fortiate/Build/Workspaces/R/ML_Transaction-model_R/Models",force = TRUE)
 (performance<-h2o.performance(nnmodel))
-predict.nn<-as.data.frame(h2o.predict(nnmodel,df6))
+predict.nn<-as.data.frame(h2o.predict(nnmodel,))
 
 print("")

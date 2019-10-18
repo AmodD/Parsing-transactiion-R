@@ -2,7 +2,7 @@ library(h2o)
 localH2O <- h2o.init(nthreads = -1)
 h2o.init()
 nnmodel<-h2o.loadModel("/home/gayatri/Fortiate/Build/Workspaces/R/ML_Transaction-model_R/Models/DeepLearning_model_R_1571115759676_2")
-consumer=rkafka.createConsumer("127.0.0.1:2181","rupay-generated-data",autoOffsetReset="smallest",groupId="gh")
+consumer=rkafka.createConsumer("127.0.0.1:2181","rupay-generated-data",autoOffsetReset="smallest")
 #rkafka.createConsumer("127.0.0.1:2181","test2", groupId="test-consumer-group", zookeeperConnectionTimeoutMs="100000", consumerTimeoutMs="10000", autoCommitEnable="NULL", autoCommitInterval="NULL", autoOffsetReset="smallest")
 #rkafka.read(consumer2)
 #rkafka.read(consumer)
@@ -11,34 +11,18 @@ rkafka.read(consumer)
 data<-fromJSON(rkafka.read(consumer))
 
 data
-numerofdataElements<-length(data[["dataElements"]][[1]])
-for (i in 1:numerofdataElements){
-  if (data[["dataElements"]][[1]][[i]] == 3){
-    PROCESSING_CODE <-data[["dataElements"]][[2]][[i]]
-    print(PROCESSING_CODE <-data[["dataElements"]][[2]][[i]])
-    }
-        
-  else if (data[["dataElements"]][[1]][[i]] == 4){
-    TRANSACTION_AMOUNT <-data[["dataElements"]][[2]][[i]]
-    print(TRANSACTION_AMOUNT)
-    }
-  
-  else if (data[["dataElements"]][[1]][[i]] == 18){
-   MERCHANT_CATEGORY_CODE <-data[["dataElements"]][[2]][[i]]
-   print(MERCHANT_CATEGORY_CODE)
-    }
-  
-  else if (data[["dataElements"]][[1]][[i]] == 22){
-    POS_ENTRY_MODE <-data[["dataElements"]][[2]][[i]]
-    print(POS_ENTRY_MODE)
-    }
-  
-  
-  
-   
- 
+for(i in 1:16){
+if(data[["dataElements"]][[i]][["id"]] == 3)
+  PROCESSING_CODE<-data[["dataElements"]][[i]][["value"]]
+else if(data[["dataElements"]][[i]][["id"]] == 4)
+  TRANSACTION_AMOUNT<-data[["dataElements"]][[i]][["value"]]
+else if(data[["dataElements"]][[i]][["id"]] == 18)
+  MERCHANT_CATEGORY_CODE<-data[["dataElements"]][[i]][["value"]]
+else if(data[["dataElements"]][[i]][["id"]] == 22)
+  POS_ENTRY_MODE<-data[["dataElements"]][[i]][["value"]]
 }
-#df6<-data.frame(Processing_code,Transaction_amount,Merchant_category_code,POS_ENTRY_MODE)
+
+
 df6<-data.frame(PROCESSING_CODE,TRANSACTION_AMOUNT,MERCHANT_CATEGORY_CODE,POS_ENTRY_MODE)
 POS_DATA = '000030100000'
 df6<-cbind(df6, POS_DATA)
@@ -58,7 +42,7 @@ df6$POS_DATA =NULL
 df6 = as.h2o(df6)
 df6
 cols<-colnames(df6)
-nnmodel<-h2o.loadModel("/home/gayatri/Fortiate/Build/Workspaces/R/ML_Transaction-model_R/Models/DeepLearning_model_R_1571115759676_2")
+nnmodel<-h2o.loadModel("/home/gayatri/Fortiate/Build/Workspaces/R/ML_Transaction-model_R/Models/DeepLearning_model_R_1571383247465_1")
 predict.nn<-as.data.frame(h2o.predict(nnmodel,df6))
 print("---------------------------------------------------------------------------")
 print("For new transaction")
